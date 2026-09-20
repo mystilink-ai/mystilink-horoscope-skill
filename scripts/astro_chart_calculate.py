@@ -195,6 +195,9 @@ def to_serializable(result: dict) -> dict:
         }
         for a in result["aspects"]
     ]
+    serializable["planets"] = serializable["points"]
+    if "schema_version" not in serializable:
+        serializable["schema_version"] = "mystilink.horoscope.natal/0.1"
     return serializable
 
 
@@ -291,6 +294,7 @@ def calculate_chart(
     mc_sign, mc_degree = zodiac_from_longitude(mc)
 
     return {
+        "schema_version": "mystilink.horoscope.natal/0.1",
         "local_datetime": local_dt.isoformat(),
         "effective_local_datetime": effective_local_dt.isoformat(),
         "utc_datetime": utc_dt.isoformat(),
@@ -375,19 +379,22 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--datetime",
-        required=True,
+        required=False,
+        default=None,
         help='Local datetime in format "YYYY-MM-DD HH:MM"',
     )
     parser.add_argument(
         "--timezone",
-        required=True,
+        required=False,
+        default=None,
         help='IANA timezone, e.g. "Asia/Shanghai"',
     )
-    parser.add_argument("--lat", type=float, required=True, help="Latitude in degrees.")
+    parser.add_argument("--lat", type=float, required=False, default=None, help="Latitude in degrees.")
     parser.add_argument(
         "--lon",
         type=float,
-        required=True,
+        required=False,
+        default=None,
         help="Longitude in degrees (east positive, west negative).",
     )
     parser.add_argument(
@@ -418,6 +425,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="Disable major aspect calculation.",
     )
     parser.add_argument(
+        "--birth-json",
+        "--profile-json",
+        dest="birth_json",
+        default=None,
+        help="BirthProfile (mystilink.birth/0.1) or legacy profile.json",
+    )
+    parser.add_argument(
         "--output",
         choices=["text", "json"],
         default="text",
@@ -430,25 +444,90 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _load_profile(raw: str) -> dict:
+    from pathlib import Path
+    import sys
+
+    if raw == "-":
+        text = sys.stdin.read()
+    else:
+        path = Path(raw)
+        text = path.read_text(encoding="utf-8") if path.is_file() else raw
+    data = json.loads(text)
+    if not isinstance(data, dict):
+        raise ValueError("profile JSON root must be an object")
+    return data
+
+
+def _resolve_birth(args: argparse.Namespace) -> tuple[str, str, float, float, bool]:
+    datetime_str = args.datetime
+    timezone_name = args.timezone
+    lat = args.lat
+    lon = args.lon
+    true_solar = bool(args.true_solar_time)
+
+    if args.birth_json:
+        data = _load_profile(args.birth_json)
+        if data.get("schema_version") == "mystilink.birth/0.1" or (
+            isinstance(data.get("birth"), dict) and "datetime" in data["birth"]
+        ):
+            birth = data["birth"]
+            timezone_name = timezone_name or birth["timezone"]
+            dt_raw = str(birth["datetime"]).strip().replace("Z", "+00:00")
+            instant = datetime.fromisoformat(dt_raw)
+            if instant.tzinfo is None:
+                raise ValueError("birth.datetime must include a timezone offset")
+            datetime_str = (
+                f"{instant.year:04d}-{instant.month:02d}-{instant.day:02d} "
+                f"{instant.hour:02d}:{instant.minute:02d}"
+            )
+            if lon is None:
+                lon = birth.get("longitude")
+            place = data.get("place")
+            if isinstance(place, dict):
+                if lat is None:
+                    lat = place.get("lat")
+                if lon is None:
+                    lon = place.get("lon")
+            if birth.get("true_solar_time"):
+                true_solar = True
+        else:
+            datetime_str = datetime_str or data.get("datetime")
+            timezone_name = timezone_name or data.get("timezone")
+            if lat is None:
+                lat = data.get("lat")
+            if lon is None:
+                lon = data.get("lon")
+            if data.get("true_solar_time"):
+                true_solar = True
+
+    if not datetime_str or not timezone_name:
+        raise ValueError("datetime and timezone are required")
+    if lat is None or lon is None:
+        raise ValueError("lat and lon are required")
+    return str(datetime_str), str(timezone_name), float(lat), float(lon), true_solar
+
+
 def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
 
     try:
-        local_dt = parse_local_datetime(args.datetime, args.timezone)
+        datetime_str, timezone_name, lat, lon, true_solar = _resolve_birth(args)
+        local_dt = parse_local_datetime(datetime_str, timezone_name)
     except ValueError as exc:
-        raise SystemExit(f"Invalid datetime format: {exc}") from exc
+        raise SystemExit(f"Invalid input: {exc}") from exc
     except Exception as exc:
-        raise SystemExit(f"Failed to parse timezone '{args.timezone}': {exc}") from exc
+        raise SystemExit(f"Failed to resolve birth data: {exc}") from exc
 
     result = calculate_chart(
         local_dt,
-        args.lat,
-        args.lon,
+        lat,
+        lon,
         args.house_system,
         zodiac_mode=args.zodiac,
         sidereal_mode=args.sidereal_mode,
-        use_true_solar_time=args.true_solar_time,
+        use_true_solar_time=true_solar,
         include_aspects=not args.no_aspects,
     )
 

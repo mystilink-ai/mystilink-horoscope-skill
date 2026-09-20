@@ -38,6 +38,10 @@ python3 scripts/astro_chart_calculate.py \
   --timezone Asia/Shanghai \
   --lat 31.23 --lon 121.47 \
   --output json
+
+python3 scripts/astro_chart_calculate.py \
+  --birth-json examples/profile.v0.json \
+  --output json
 ```
 
 可选：`--zodiac tropical|sidereal`、`--true-solar-time`。
@@ -46,7 +50,7 @@ python3 scripts/astro_chart_calculate.py \
 
 ## 工作流
 
-1. 采集时间、时区、纬度、经度（`examples/profile.json`）
+1. 采集出生资料——`examples/profile.v0.json`（BirthProfile）或旧版 `examples/profile.json`
 2. 运行本命盘脚本
 3. 可选 Wiki：
 
@@ -61,7 +65,8 @@ GET https://wiki.mystilink.com/api/v1/pages/horoscope.concept.natal-chart?locale
 
 ## 示例
 
-- `examples/profile.json` — 虚构本命输入
+- `examples/profile.v0.json` — BirthProfile（`mystilink.birth/0.1`，虚构）
+- `examples/profile.json` — 旧版虚构本命输入
 
 ## 限制
 

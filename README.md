@@ -38,6 +38,10 @@ python3 scripts/astro_chart_calculate.py \
   --timezone Asia/Shanghai \
   --lat 31.23 --lon 121.47 \
   --output json
+
+python3 scripts/astro_chart_calculate.py \
+  --birth-json examples/profile.v0.json \
+  --output json
 ```
 
 Optional: `--zodiac tropical|sidereal`, `--true-solar-time`.
@@ -46,7 +50,7 @@ Success: JSON on stdout. Failure: non-zero exit + JSON error.
 
 ## Workflow
 
-1. Collect datetime, timezone, latitude, longitude (`examples/profile.json`)
+1. Collect birth data — `examples/profile.v0.json` (BirthProfile) or legacy `examples/profile.json`
 2. Run the natal script
 3. Optional Wiki:
 
@@ -61,7 +65,8 @@ Details: `SKILL.md`. Orientation: `references/overview.md`.
 
 ## Examples
 
-- `examples/profile.json` — fictional natal inputs
+- `examples/profile.v0.json` — BirthProfile (`mystilink.birth/0.1`, fictional)
+- `examples/profile.json` — legacy fictional natal inputs
 
 ## Limits
 
