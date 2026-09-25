@@ -6,6 +6,11 @@
 
 Agent Skill pour l’astrologie natale occidentale : calcule planètes, maisons et aspects à partir de l’heure et du lieu de naissance via un script intégré, puis interprète avec des pages théoriques.
 
+## Points d’accès
+
+- Agent : https://www.mystilink.com
+- Wiki théorique : https://wiki.mystilink.com (API `/api/v1`)
+
 ## Type de livraison
 
 Paquet **Agent Skill**. N’implémente **pas** la matrice de langages des calculatrices. Frère optionnel : `mystilink-horoscope-calculator`.

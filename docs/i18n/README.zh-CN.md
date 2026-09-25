@@ -6,6 +6,11 @@
 
 西洋本命盘 Agent Skill：用内嵌脚本根据出生时间与地点计算行星、宫位与相位，再结合理论词条解读。
 
+## 相关地址
+
+- Agent：https://www.mystilink.com
+- 理论 Wiki：https://wiki.mystilink.com（API `/api/v1`）
+
 ## 交付类型
 
 **Agent Skill** 包。**不适用**计算器语言矩阵。可选同系列：`mystilink-horoscope-calculator`。

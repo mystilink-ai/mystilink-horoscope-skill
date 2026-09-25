@@ -6,6 +6,11 @@
 
 서양 네이탈 점성 Agent Skill: 내장 스크립트로 출생 시각과 장소에서 행성·하우스·애스펙트를 계산한 뒤 이론 페이지로 해석합니다.
 
+## 엔드포인트
+
+- Agent: https://www.mystilink.com
+- 이론 Wiki: https://wiki.mystilink.com (API `/api/v1`)
+
 ## 배포 유형
 
 **Agent Skill** 패키지. 계산기 언어 매트릭스는 **적용되지 않습니다**. 선택적 동계열: `mystilink-horoscope-calculator`.

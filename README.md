@@ -6,6 +6,11 @@
 
 Agent Skill for western natal astrology: compute planets, houses, and aspects from birth time and place via an embedded script, then interpret with theory pages.
 
+## Endpoints
+
+- Agent: https://www.mystilink.com
+- Theory Wiki: https://wiki.mystilink.com (API `/api/v1`)
+
 ## Delivery type
 
 **Agent Skill** package. Does **not** implement the calculator language matrix. Optional sibling: `mystilink-horoscope-calculator`.

@@ -6,6 +6,11 @@
 
 西洋出生図向け Agent Skill：内嵌スクリプトで出生時刻と場所から惑星・ハウス・アスペクトを計算し、理論ページで解釈します。
 
+## エンドポイント
+
+- Agent：https://www.mystilink.com
+- 理論 Wiki：https://wiki.mystilink.com（API `/api/v1`）
+
 ## 配布形態
 
 **Agent Skill** パッケージ。計算機の言語マトリクスは **適用しません**。任意の同系列：`mystilink-horoscope-calculator`。
