@@ -10,6 +10,7 @@ compatibility: "python3; pip package pyswisseph; network optional for wiki API"
 metadata:
   mystilink:
     system: horoscope
+    version: 0.1.0
     about: "Local natal chart script (planets, houses, aspects) plus optional Mystilink Wiki theory pages."
     wiki_base: https://wiki.mystilink.com
     wiki_api: /api/v1
